@@ -1788,38 +1788,33 @@ app.post('/announcements/:announcementId/register', authMiddleware, async (req, 
           return res.status(400).json({ ok: false, error: 'Already registered for this event' });
         } else {
           // Re-register if previously cancelled
-        } else {
-          // Re-register if previously cancelled
           await pool.query(
             'UPDATE event_registrations SET status = \'registered\', registered_at = NOW() WHERE id = $1',
             [existing[0].id]
           );
         }
-      }
-    } else {
-      // Create new registration
-    } else {
-      // Create new registration
-      await pool.query(
-        `INSERT INTO event_registrations 
+      } else {
+        // Create new registration
+        await pool.query(
+          `INSERT INTO event_registrations 
          (announcement_id, user_id, user_email, user_name, roll_number, branch) 
          VALUES ($1, $2, $3, $4, $5, $6)`,
-        [announcementId, user.id, user.email, user.name, user.roll_number, user.branch]
-      );
+          [announcementId, user.id, user.email, user.name, user.roll_number, user.branch]
+        );
+      }
     }
-  }
 
     console.log(`✓ ${userEmail} registered for event ${announcementId}`);
 
-  res.json({
-    ok: true,
-    message: 'Successfully registered for event!',
-    registered: true
-  });
-} catch (err) {
-  console.error('Error registering for event:', err);
-  res.status(500).json({ ok: false, error: 'Failed to register' });
-}
+    res.json({
+      ok: true,
+      message: 'Successfully registered for event!',
+      registered: true
+    });
+  } catch (err) {
+    console.error('Error registering for event:', err);
+    res.status(500).json({ ok: false, error: 'Failed to register' });
+  }
 });
 
 // Cancel registration
