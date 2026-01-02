@@ -3,76 +3,71 @@ const { Pool } = require('pg');
 const dns = require('dns');
 
 // =========================================================
-// DNS RESOLUTION FIX FOR RENDER + SUPABASE
-// =========================================================
-// Render sometimes defaults to IPv6, which causes ENETUNREACH errors.
-// This forces node to resolve the hostname to an IPv4 address.
+// ROBUST DATABASE CONNECTION (IPv4 FORCE)
 // =========================================================
 
-// Async pool wrapper
-let pool;
-
-async function getPool() {
-  if (pool) return pool;
-
-  const config = {
-    connectionString: `postgres://${process.env.DB_USER || "postgres"}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT || 5432}/${process.env.DB_NAME || "postgres"}?sslmode=no-verify`,
-    ssl: { rejectUnauthorized: false },
-    max: 20,
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 10000,
-  };
-
-  // If we are in production (or just generally), force IPv4 resolution
-  if (process.env.DB_HOST) {
-    try {
-      const addresses = await dns.promises.resolve4(process.env.DB_HOST);
-      if (addresses && addresses.length > 0) {
-        console.log(`✅ [DNS] Resolved ${process.env.DB_HOST} to IPv4: ${addresses[0]}`);
-        // Replace hostname with resolved IP
-        config.host = addresses[0];
-        // Rebuild connection string with IP
-        config.connectionString = `postgres://${process.env.DB_USER || "postgres"}:${process.env.DB_PASSWORD}@${addresses[0]}:${process.env.DB_PORT || 5432}/${process.env.DB_NAME || "postgres"}?sslmode=no-verify`;
-      }
-    } catch (err) {
-      console.warn(`⚠️ [DNS] Failed to resolve ${process.env.DB_HOST} to IPv4, proceeding with hostname. Error: ${err.message}`);
-    }
-  }
-
-  pool = new Pool(config);
-  return pool;
-}
-
-// Initialize pool immediately but handle the promise internally in the exports
-// This is a bit hacky for CommonJS but 'pg' Pool is usually synchronous. 
-// Since we need async DNS, we'll initialize a default pool first and swap it? 
-// No, that's dangerous.
-// BETTER APPROACH: Use dns.lookup options globally if possible, OR just use the resolved IP in the config directly if we can await at top level (Node 14+ supports top-level await but CommonJS not always).
-// 
-// FALLBACK: Use Synchronous Config with 'family: 4' AGGRESSIVELY, 
-// AND monkey-patch dns.lookup for this process.
-
-// MONKEY PATCH DNS LOOKUP TO FORCE IPV4
-// This affects the whole process but is usually safe for this app.
-const originalLookup = dns.lookup;
-dns.lookup = (hostname, options, callback) => {
-  if (typeof options === 'function') {
-    callback = options;
-    options = {};
-  }
-  options = options || {};
-  options.family = 4; // FORCE IPv4
-  return originalLookup(hostname, options, callback);
-};
-
-// Now Create Pool normally - pg uses dns.lookup internally
-pool = new Pool({
-  connectionString: `postgres://${process.env.DB_USER || "postgres"}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT || 5432}/${process.env.DB_NAME || "postgres"}?sslmode=no-verify`,
-  ssl: { rejectUnauthorized: false },
+// Config for the pool
+const dbConfig = {
+  user: process.env.DB_USER || "postgres",
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME || "postgres",
+  port: process.env.DB_PORT || 5432,
+  ssl: { rejectUnauthorized: false }, // Required for Supabase
   max: 20,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 10000,
-});
+};
+
+let actualPool = null;
+
+async function getLazyPool() {
+  if (actualPool) return actualPool;
+
+  let host = process.env.DB_HOST;
+  console.log('🔌 Check: Connecting to DB Host:', host);
+
+  // Attempt to resolve to IPv4 to bypass Render IPv6 issues
+  if (host && !host.match(/^(\d{1,3}\.){3}\d{1,3}$/)) { // If not already an IP
+    try {
+      console.log('🔍 DNS: Resolving IPv4 for', host);
+      const addresses = await dns.promises.resolve4(host);
+      if (addresses && addresses[0]) {
+        console.log(`✅ DNS: Resolved to ${addresses[0]}`);
+        host = addresses[0];
+      }
+    } catch (err) {
+      console.warn('⚠️ DNS: IPv4 Resolution failed, using hostname:', err.message);
+    }
+  }
+
+  // Create the real pool with the resolved IP
+  actualPool = new Pool({
+    ...dbConfig,
+    host: host, // Use resolved IP or original hostname
+    connectionString: `postgres://${dbConfig.user}:${dbConfig.password}@${host}:${dbConfig.port}/${dbConfig.database}?sslmode=no-verify`
+  });
+
+  // Error handler for the pool
+  actualPool.on('error', (err, client) => {
+    console.error('❌ Unexpected error on idle client', err);
+    // Don't exit, just log. Render might restart if critical.
+  });
+
+  return actualPool;
+}
+
+// STUB POOL - Mimics pg.Pool interface but initializes lazily
+// This allows exporting 'pool' immediately while doing async work behind the scenes
+const pool = {
+  query: async (text, params) => {
+    const p = await getLazyPool();
+    return p.query(text, params);
+  },
+  connect: async () => {
+    const p = await getLazyPool();
+    return p.connect();
+  },
+};
 
 /* =========================
    USER FUNCTIONS
