@@ -1,0 +1,1228 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>My Profile | Club Hub</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: #F9FAFB;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .app-header {
+      background: white;
+      border-bottom: 1px solid #E5E7EB;
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .header-logo {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .header-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .header-branding {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #1A1A1A;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .header-subtitle {
+      font-size: 0.75rem;
+      color: #6B7280;
+      font-weight: 500;
+    }
+
+    .back-btn {
+      padding: 0.625rem 1.25rem;
+      background: white;
+      border: 1px solid #E5E7EB;
+      border-radius: 0.75rem;
+      color: #374151;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .back-btn:hover {
+      background: #F9FAFB;
+      border-color: #D1D5DB;
+    }
+
+    /* Container */
+    .container {
+      max-width: 900px;
+      margin: 2.5rem auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Profile Card */
+    .profile-card {
+      background: white;
+      border: 1px solid #E5E7EB;
+      border-radius: 1rem;
+      padding: 3rem;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+      text-align: center;
+      position: relative;
+    }
+
+    .logout-btn {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      padding: 0.5rem 1rem;
+      background: #FEF2F2;
+      border: 1px solid #FEE2E2;
+      border-radius: 0.75rem;
+      color: #DC2626;
+      font-weight: 600;
+      font-size: 0.8125rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .logout-btn:hover {
+      background: #FEE2E2;
+      border-color: #FECACA;
+    }
+
+    /* Profile Photo */
+    .profile-photo-section {
+      margin-bottom: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .profile-photo-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    .profile-photo {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid #F2B705;
+      box-shadow: 0 8px 24px rgba(242, 183, 5, 0.2);
+    }
+
+    .profile-photo-placeholder {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #F2B705, #F5C422);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 60px;
+      color: #1A1A1A;
+      font-weight: 800;
+      box-shadow: 0 8px 24px rgba(242, 183, 5, 0.2);
+      border: 4px solid white;
+    }
+
+    .upload-btn-overlay {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      width: 45px;
+      height: 45px;
+      background: #C41E3A;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(196, 30, 58, 0.4);
+      transition: all 0.3s;
+      border: 3px solid white;
+    }
+
+    .upload-btn-overlay:hover {
+      transform: scale(1.1);
+      background: #A01528;
+    }
+
+    #photoInput {
+      display: none;
+    }
+
+    .photo-hint {
+      color: #6B7280;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .role-badge {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background: #C41E3A;
+      color: white;
+      border-radius: 2rem;
+      font-weight: 700;
+      font-size: 0.9375rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 12px rgba(196, 30, 58, 0.3);
+    }
+
+    .role-badge.pending {
+      background: #F59E0B;
+    }
+
+    /* Form */
+    .form-section {
+      text-align: left;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: #374151;
+      margin-bottom: 0.5rem;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 0.875rem 1.125rem;
+      border: 1px solid #D1D5DB;
+      border-radius: 0.75rem;
+      font-size: 0.9375rem;
+      font-family: 'Inter', sans-serif;
+      background: #F9FAFB;
+      color: #1F2937;
+      transition: all 0.2s;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: #C41E3A;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.1);
+    }
+
+    input[readonly] {
+      background: #F3F4F6;
+      border-color: #E5E7EB;
+      cursor: not-allowed;
+      color: #6B7280;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.75rem;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      padding: 0.75rem 1.25rem;
+      background: #F9FAFB;
+      border: 2px solid #E5E7EB;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex: 1;
+    }
+
+    .radio-option:hover {
+      background: white;
+      border-color: #C41E3A;
+    }
+
+    .radio-option input[type="radio"] {
+      width: auto;
+      margin: 0;
+      cursor: pointer;
+      accent-color: #C41E3A;
+    }
+
+    .radio-option label {
+      margin: 0;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9375rem;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid #F3F4F6;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 1rem 1.5rem;
+      border: none;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      font-size: 0.9375rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: #C41E3A;
+      color: white;
+      box-shadow: 0 4px 12px rgba(196, 30, 58, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: #A01528;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(196, 30, 58, 0.4);
+    }
+
+    .btn-secondary {
+      background: white;
+      border: 2px solid #E5E7EB;
+      color: #374151;
+    }
+
+    .btn-secondary:hover {
+      border-color: #C41E3A;
+      color: #C41E3A;
+    }
+
+    /* Event Management Section */
+    .events-section {
+      background: white;
+      border: 1px solid #E5E7EB;
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-top: 2rem;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #F2B705;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #1F2937;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .events-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .event-card {
+      background: #F9FAFB;
+      border: 1px solid #E5E7EB;
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      transition: all 0.2s;
+    }
+
+    .event-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-color: #F2B705;
+    }
+
+    .event-header {
+      margin-bottom: 1rem;
+    }
+
+    .event-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #1F2937;
+      margin-bottom: 0.5rem;
+    }
+
+    .event-date {
+      font-size: 0.875rem;
+      color: #6B7280;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .event-stats {
+      display: flex;
+      gap: 2rem;
+      margin: 1rem 0;
+      padding: 1rem;
+      background: white;
+      border-radius: 0.5rem;
+    }
+
+    .stat-box {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: #6B7280;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #1F2937;
+    }
+
+    .event-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .btn-view-reg {
+      flex: 1;
+      padding: 0.75rem 1.5rem;
+      background: #10B981;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-view-reg:hover {
+      background: #059669;
+      transform: translateY(-1px);
+    }
+
+    .btn-export {
+      padding: 0.75rem 1.5rem;
+      background: white;
+      color: #10B981;
+      border: 2px solid #10B981;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-export:hover {
+      background: #10B981;
+      color: white;
+    }
+
+    .registrations-container {
+      margin-top: 1.5rem;
+      background: white;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      border: 1px solid #E5E7EB;
+    }
+
+    .reg-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .reg-table thead {
+      background: #F9FAFB;
+    }
+
+    .reg-table th {
+      padding: 1rem;
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #6B7280;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 2px solid #E5E7EB;
+    }
+
+    .reg-table td {
+      padding: 1rem;
+      font-size: 0.9375rem;
+      color: #1F2937;
+      border-bottom: 1px solid #E5E7EB;
+    }
+
+    .reg-table tbody tr:hover {
+      background: #F9FAFB;
+    }
+
+    .status-badge {
+      padding: 0.375rem 0.875rem;
+      border-radius: 0.5rem;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .status-registered {
+      background: #D1FAE5;
+      color: #065F46;
+    }
+
+    .status-cancelled {
+      background: #FEE2E2;
+      color: #991B1B;
+    }
+
+    /* My Registrations (for students) */
+    .my-registrations-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .registration-card {
+      background: #F0FDF4;
+      border: 2px solid #10B981;
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .registration-info h3 {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: #065F46;
+      margin-bottom: 0.5rem;
+    }
+
+    .registration-meta {
+      font-size: 0.875rem;
+      color: #6B7280;
+      display: flex;
+      gap: 1rem;
+    }
+
+    .btn-cancel-reg {
+      padding: 0.625rem 1.25rem;
+      background: #FEE2E2;
+      color: #991B1B;
+      border: 1px solid #FCA5A5;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-cancel-reg:hover {
+      background: #FCA5A5;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #6B7280;
+    }
+
+    .empty-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    @media (max-width: 768px) {
+      .app-header {
+        padding: 0.75rem 1rem;
+      }
+
+      .container {
+        padding: 0 1rem;
+      }
+
+      .profile-card {
+        padding: 2rem 1.5rem;
+      }
+
+      .event-stats {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .event-actions {
+        flex-direction: column;
+      }
+
+      .reg-table {
+        font-size: 0.8125rem;
+      }
+
+      .reg-table th,
+      .reg-table td {
+        padding: 0.75rem 0.5rem;
+      }
+
+      .registration-card {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+      }
+
+      .btn-cancel-reg {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="app-header">
+    <div class="header-content">
+      <div class="header-left">
+        <div class="header-logo">
+          <img src="/kle-logo.png" alt="KLE Tech" onerror="this.style.display='none'" />
+        </div>
+        <div class="header-branding">
+          <h1 class="header-title">Club Hub</h1>
+          <p class="header-subtitle">KLE Technological University</p>
+        </div>
+      </div>
+      <a href="/" class="back-btn">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+        Back to Home
+      </a>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="profile-card">
+      <button id="logoutBtn" class="logout-btn">Sign out</button>
+
+      <div class="profile-photo-section">
+        <div class="profile-photo-wrapper">
+          <div id="photoDisplay" class="profile-photo-placeholder">
+            <span id="photoInitial">U</span>
+          </div>
+          <div class="upload-btn-overlay" onclick="document.getElementById('photoInput').click()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 5V19M5 12H19" stroke="white" stroke-width="3" stroke-linecap="round" />
+            </svg>
+          </div>
+          <input type="file" id="photoInput" accept="image/*" onchange="handlePhotoUpload(this)">
+        </div>
+        <p class="photo-hint">Click the + button to upload your photo</p>
+      </div>
+
+      <div id="roleDisplay" class="role-badge" style="display:none;"></div>
+
+      <div class="form-section">
+        <div class="form-group">
+          <label>Email Address</label>
+          <input id="email" type="email" readonly />
+        </div>
+
+        <div class="form-group">
+          <label>Full Name</label>
+          <input id="name" type="text" placeholder="Enter your full name" />
+        </div>
+
+        <div class="form-group">
+          <label>Branch</label>
+          <input id="branch" type="text" placeholder="e.g., Computer Science & Engineering" />
+        </div>
+
+        <div class="form-group">
+          <label>Roll Number</label>
+          <input id="roll" type="text" placeholder="Enter your roll number" />
+        </div>
+
+        <div id="roleSelect" class="form-group" style="display:none;">
+          <label>Choose your role</label>
+          <div class="radio-group">
+            <div class="radio-option">
+              <input type="radio" name="role" value="student" id="roleStudent" onchange="toggleClubSelect()">
+              <label for="roleStudent">👨‍🎓 Student</label>
+            </div>
+            <div class="radio-option">
+              <input type="radio" name="role" value="club_admin" id="roleAdmin" onchange="toggleClubSelect()">
+              <label for="roleAdmin">🎯 Club Admin</label>
+            </div>
+          </div>
+        </div>
+
+        <div id="clubSelect" class="form-group" style="display:none;">
+          <label>Select Club</label>
+          <select id="clubDropdown">
+            <option value="">-- Select a club --</option>
+          </select>
+        </div>
+
+        <div class="btn-group">
+          <button id="saveBtn" class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M2 8L6 12L14 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+            Save Changes
+          </button>
+          <button id="editBtn" class="btn btn-secondary" style="display:none;">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M11 2L14 5L6 13H3V10L11 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+            Edit Profile
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Event Management Section (Club Admins) -->
+    <div id="eventsSection" class="events-section" style="display: none;">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span>📊</span>
+          Event Management
+        </h2>
+      </div>
+      <div id="eventsList" class="events-list"></div>
+    </div>
+
+    <!-- My Registrations Section (Students) -->
+    <div id="myRegistrationsSection" class="events-section" style="display: none;">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span>📝</span>
+          My Event Registrations
+        </h2>
+      </div>
+      <div id="myRegistrationsList" class="my-registrations-list"></div>
+    </div>
+  </div>
+
+  <script>
+    const API = "http://localhost:4000";
+    const token = localStorage.getItem("token");
+    if (!token) location.href = "/";
+
+    const headers = {
+      Authorization: "Bearer " + token,
+      "Content-Type": "application/json"
+    };
+
+    let currentUserRole = null;
+    let currentClubId = null;
+
+    function setReadOnly(on) {
+      ['name', 'branch', 'roll'].forEach(id => {
+        document.getElementById(id).readOnly = on;
+      });
+    }
+
+    function toggleClubSelect() {
+      const roleInput = document.querySelector('input[name="role"]:checked');
+      const clubSelectDiv = document.getElementById('clubSelect');
+
+      if (roleInput && roleInput.value === 'club_admin') {
+        clubSelectDiv.style.display = 'block';
+        loadClubs();
+      } else {
+        clubSelectDiv.style.display = 'none';
+      }
+    }
+
+    function handlePhotoUpload(input) {
+      const file = input.files[0];
+      if (file) {
+        if (file.size > 5000000) {
+          alert('Image too large. Please select an image under 5MB.');
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const photoData = e.target.result;
+          document.getElementById('photoDisplay').innerHTML =
+            `<img src="${photoData}" class="profile-photo" alt="Profile">`;
+          saveProfilePicture(photoData);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    async function saveProfilePicture(photoData) {
+      try {
+        await fetch(API + '/profile/picture', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ profile_picture: photoData })
+        });
+      } catch (err) {
+        console.error('Error saving profile picture:', err);
+      }
+    }
+
+    async function loadClubs() {
+      const clubDropdown = document.getElementById('clubDropdown');
+      if (clubDropdown.options.length > 1) return;
+
+      try {
+        const res = await fetch(API + '/clubs');
+        const data = await res.json();
+
+        if (data.ok && data.clubs) {
+          data.clubs.forEach(club => {
+            const option = document.createElement('option');
+            option.value = club.id;
+            option.textContent = club.club_name;
+            clubDropdown.appendChild(option);
+          });
+        }
+      } catch (err) {
+        console.error('Error loading clubs:', err);
+      }
+    }
+
+    async function loadProfile() {
+      const r = await fetch(API + "/profile", { headers });
+      const j = await r.json();
+      const p = j.profile;
+
+      document.getElementById('email').value = p.email || "";
+      document.getElementById('name').value = p.name || "";
+      document.getElementById('branch').value = p.branch || "";
+      document.getElementById('roll').value = p.roll_number || "";
+      currentUserRole = p.role;
+      currentClubId = p.club_id;
+
+      // Set profile photo
+      const photoDisplay = document.getElementById('photoDisplay');
+      const photoInitial = document.getElementById('photoInitial');
+
+      if (p.profile_picture) {
+        photoDisplay.innerHTML = `<img src="${p.profile_picture}" class="profile-photo" alt="Profile">`;
+      } else if (p.name) {
+        photoInitial.textContent = p.name.charAt(0).toUpperCase();
+      } else if (p.email) {
+        photoInitial.textContent = p.email.charAt(0).toUpperCase();
+      }
+
+      // Display role badge
+      const roleDisplay = document.getElementById('roleDisplay');
+      if (p.role === "student") {
+        roleDisplay.textContent = "👨‍🎓 Student";
+        roleDisplay.style.display = "inline-block";
+        roleDisplay.classList.remove('pending');
+
+        // Load student registrations
+        document.getElementById('myRegistrationsSection').style.display = 'block';
+        loadMyRegistrations();
+      } else if (p.role === "club_admin") {
+        const clubName = p.club_name ? ` · ${p.club_name}` : "";
+        roleDisplay.textContent = p.admin_requested === 1
+          ? `🎯 Club Admin${clubName} (Pending)`
+          : `🎯 Club Admin${clubName}`;
+        roleDisplay.style.display = "inline-block";
+        roleDisplay.classList.toggle('pending', p.admin_requested === 1);
+
+        // Load club admin events
+        document.getElementById('eventsSection').style.display = 'block';
+        loadMyEvents();
+      } else if (p.admin_requested === 1 && !p.role) {
+        const clubName = p.club_name ? ` · ${p.club_name}` : "";
+        roleDisplay.textContent = `🎯 Club Admin${clubName} (Pending)`;
+        roleDisplay.style.display = "inline-block";
+        roleDisplay.classList.add('pending');
+      } else {
+        roleDisplay.style.display = "none";
+      }
+
+      // Handle form state
+      if (p.role || p.admin_requested === 1) {
+        document.getElementById('roleSelect').style.display = "none";
+        document.getElementById('clubSelect').style.display = "none";
+        setReadOnly(true);
+        document.getElementById('saveBtn').style.display = "none";
+        document.getElementById('editBtn').style.display = "flex";
+      } else {
+        document.getElementById('roleSelect').style.display = "block";
+        setReadOnly(false);
+        document.getElementById('saveBtn').style.display = "flex";
+        document.getElementById('editBtn').style.display = "none";
+      }
+    }
+
+    // Load events for club admins
+    async function loadMyEvents() {
+      try {
+        const res = await fetch(`${API}/announcements`, { headers });
+        const data = await res.json();
+
+        if (data.ok && data.announcements) {
+          const userEmail = localStorage.getItem('user_email');
+          const myEvents = data.announcements.filter(a =>
+            a.registration_enabled === 1 && a.created_by === userEmail
+          );
+
+          const eventsList = document.getElementById('eventsList');
+
+          if (myEvents.length === 0) {
+            eventsList.innerHTML = `
+              <div class="empty-state">
+                <div class="empty-icon">📅</div>
+                <p><strong>No events with registration yet</strong></p>
+                <p>Create an announcement with "Enable Student Registration" to see it here</p>
+              </div>
+            `;
+            return;
+          }
+
+          for (const event of myEvents) {
+            await loadEventCard(event);
+          }
+        }
+      } catch (err) {
+        console.error('Error loading events:', err);
+      }
+    }
+
+    async function loadEventCard(event) {
+      try {
+        const infoRes = await fetch(`${API}/announcements/${event.id}/registration-info`);
+        const infoData = await infoRes.json();
+
+        const card = document.createElement('div');
+        card.className = 'event-card';
+        card.innerHTML = `
+          <div class="event-header">
+            <h3 class="event-title">${event.title}</h3>
+            <div class="event-date">
+              <span>📅</span>
+              ${new Date(event.created_at).toLocaleDateString()}
+            </div>
+          </div>
+
+          <div class="event-stats">
+            <div class="stat-box">
+              <span class="stat-label">Registered</span>
+              <span class="stat-value">${infoData.current_count || 0}</span>
+            </div>
+            ${infoData.max_registrations ? `
+              <div class="stat-box">
+                <span class="stat-label">Max Capacity</span>
+                <span class="stat-value">${infoData.max_registrations}</span>
+              </div>
+            ` : ''}
+            ${infoData.deadline ? `
+              <div class="stat-box">
+                <span class="stat-label">Deadline</span>
+                <span class="stat-value" style="font-size: 0.875rem;">
+                  ${new Date(infoData.deadline).toLocaleDateString()}
+                </span>
+              </div>
+            ` : ''}
+          </div>
+
+          <div class="event-actions">
+            <button class="btn-view-reg" onclick="toggleRegistrations(${event.id})">
+              <span>👥</span>
+              <span id="btn-text-${event.id}">View Registrations</span>
+            </button>
+            ${infoData.current_count > 0 ? `
+              <button class="btn-export" onclick="exportRegistrations(${event.id})">
+                📥 Export CSV
+              </button>
+            ` : ''}
+          </div>
+
+          <div id="registrations-${event.id}" style="display: none;"></div>
+        `;
+
+        document.getElementById('eventsList').appendChild(card);
+      } catch (err) {
+        console.error('Error loading event card:', err);
+      }
+    }
+
+    async function toggleRegistrations(eventId) {
+      const container = document.getElementById(`registrations-${eventId}`);
+      const btnText = document.getElementById(`btn-text-${eventId}`);
+
+      if (container.style.display === 'none') {
+        try {
+          const res = await fetch(`${API}/announcements/${eventId}/registrations`, { headers });
+          const data = await res.json();
+
+          if (data.ok && data.registrations) {
+            if (data.registrations.length === 0) {
+              container.innerHTML = '<div class="empty-state"><p>No registrations yet</p></div>';
+            } else {
+              container.innerHTML = `
+                <div class="registrations-container">
+                  <table class="reg-table">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Roll Number</th>
+                        <th>Branch</th>
+                        <th>Registered At</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${data.registrations.map(reg => `
+                        <tr>
+                          <td>${reg.user_name || 'N/A'}</td>
+                          <td>${reg.roll_number || 'N/A'}</td>
+                          <td>${reg.branch || 'N/A'}</td>
+                          <td>${new Date(reg.registered_at).toLocaleString()}</td>
+                          <td>
+                            <span class="status-badge status-${reg.status}">
+                              ${reg.status}
+                            </span>
+                          </td>
+                        </tr>
+                      `).join('')}
+                    </tbody>
+                  </table>
+                </div>
+              `;
+            }
+            container.style.display = 'block';
+            btnText.textContent = 'Hide Registrations';
+          }
+        } catch (err) {
+          console.error('Error loading registrations:', err);
+          alert('Failed to load registrations');
+        }
+      } else {
+        container.style.display = 'none';
+        btnText.textContent = 'View Registrations';
+      }
+    }
+
+    async function exportRegistrations(eventId) {
+      try {
+        const res = await fetch(`${API}/announcements/${eventId}/registrations/export`, {
+          headers
+        });
+
+        if (res.ok) {
+          const blob = await res.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `registrations-${eventId}.csv`;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+        } else {
+          alert('Failed to export registrations');
+        }
+      } catch (err) {
+        console.error('Error exporting:', err);
+        alert('Error exporting registrations');
+      }
+    }
+
+    // Load registrations for students
+    async function loadMyRegistrations() {
+      try {
+        const res = await fetch(`${API}/my-registrations`, { headers });
+        const data = await res.json();
+
+        const list = document.getElementById('myRegistrationsList');
+
+        if (data.ok && data.registrations) {
+          if (data.registrations.length === 0) {
+            list.innerHTML = `
+              <div class="empty-state">
+                <div class="empty-icon">📝</div>
+                <p><strong>No event registrations yet</strong></p>
+                <p>Browse announcements and register for events you're interested in</p>
+              </div>
+            `;
+            return;
+          }
+
+          list.innerHTML = data.registrations.map(reg => `
+            <div class="registration-card">
+              <div class="registration-info">
+                <h3>${reg.title}</h3>
+                <div class="registration-meta">
+                  <span>🎯 ${reg.club_name}</span>
+                  <span>📅 Registered: ${new Date(reg.registered_at).toLocaleDateString()}</span>
+                </div>
+              </div>
+              <button class="btn-cancel-reg" onclick="cancelRegistration(${reg.announcement_id}, '${reg.title.replace(/'/g, "\\'")}')">
+                Cancel Registration
+              </button>
+            </div>
+          `).join('');
+        }
+      } catch (err) {
+        console.error('Error loading registrations:', err);
+      }
+    }
+
+    async function cancelRegistration(announcementId, title) {
+      if (!confirm(`Cancel your registration for "${title}"?`)) return;
+
+      try {
+        const res = await fetch(`${API}/announcements/${announcementId}/unregister`, {
+          method: 'POST',
+          headers
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.ok) {
+          alert('✓ Registration cancelled successfully');
+          loadMyRegistrations();
+        } else {
+          alert('✗ Failed to cancel: ' + (data.error || 'Unknown error'));
+        }
+      } catch (err) {
+        console.error('Error cancelling registration:', err);
+        alert('✗ Failed to cancel registration');
+      }
+    }
+
+    // Save button handler
+    document.getElementById('saveBtn').onclick = async () => {
+      const roleInput = document.querySelector('input[name="role"]:checked');
+      const role = roleInput ? roleInput.value : null;
+
+      let clubId = null;
+      if (role === 'club_admin') {
+        const clubDropdown = document.getElementById('clubDropdown');
+        clubId = clubDropdown.value ? parseInt(clubDropdown.value) : null;
+
+        if (!clubId) {
+          alert('Please select a club');
+          return;
+        }
+      }
+
+      const payload = {
+        name: document.getElementById('name').value.trim(),
+        branch: document.getElementById('branch').value.trim(),
+        roll_number: document.getElementById('roll').value.trim()
+      };
+
+      if (role) {
+        payload.role = role;
+        if (clubId) payload.club_id = clubId;
+      }
+
+      const res = await fetch(API + "/profile", {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        alert("✓ Profile saved!");
+        await loadProfile();
+      } else {
+        alert("✗ Failed to save");
+      }
+    };
+
+    document.getElementById('editBtn').onclick = () => {
+      setReadOnly(false);
+      document.getElementById('saveBtn').style.display = "flex";
+      document.getElementById('editBtn').style.display = "none";
+    };
+
+    document.getElementById("logoutBtn").onclick = () => {
+      if (confirm('Sign out?')) {
+        localStorage.removeItem("token");
+        location.href = "/";
+      }
+    };
+
+    // Initialize
+    loadProfile();
+  </script>
+
+</body>
+
+</html>
