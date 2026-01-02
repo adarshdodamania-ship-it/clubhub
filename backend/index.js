@@ -80,25 +80,51 @@ app.use(cors({ origin: process.env.FRONTEND_ORIGIN || '*' }));
 const smtpPort = parseInt(process.env.EMAIL_PORT || '587');
 const smtpSecure = (String(process.env.EMAIL_SECURE || '').toLowerCase() === 'true') || smtpPort === 465;
 
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: smtpPort,
-  secure: smtpSecure,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  tls: {
-    rejectUnauthorized: false
-  },
-  family: 4, // Force IPv4 to avoid Render IPv6 timeout issues
-  logger: false,
-  debug: false,
-});
+let transporter;
 
-transporter.verify()
-  .then(() => console.log('SMTP transporter verified'))
-  .catch((err) => console.warn('SMTP verify failed:', err.message));
+const initializeEmail = async () => {
+  try {
+    const dns = require('dns').promises;
+    console.log('📧 Resolving SMTP Host:', process.env.EMAIL_HOST);
+
+    // Explicitly resolve to IPv4
+    const { address } = await dns.lookup(process.env.EMAIL_HOST, { family: 4 });
+    console.log(`✅ Resolved ${process.env.EMAIL_HOST} to IPv4: ${address}`);
+
+    transporter = nodemailer.createTransport({
+      host: address, // Use the IP directly
+      port: smtpPort,
+      secure: smtpSecure,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+      tls: {
+        rejectUnauthorized: false
+      },
+      //servername: process.env.EMAIL_HOST, // verifying certificate might need this
+    });
+
+    await transporter.verify();
+    console.log('✅ SMTP transporter verified connection to ' + address);
+  } catch (err) {
+    console.warn('❌ SMTP Init Failed:', err.message);
+  }
+};
+
+// Initialize immediately
+initializeEmail();
+
+// Wrapper function to send mail safely
+const sendEmailWrapper = async (mailOptions) => {
+  if (!transporter) {
+    await initializeEmail();
+  }
+  if (!transporter) {
+    throw new Error('Email transporter not initialized');
+  }
+  return transporter.sendMail(mailOptions);
+};
 
 // ==================== OTP CODE STORAGE ====================
 
