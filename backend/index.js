@@ -1697,7 +1697,8 @@ async function notifySubscribers(clubId, announcementTitle, announcementContent,
         `
       };
 
-      return transporter.sendMail(mailOptions)
+      // Use sendEmailWrapper for safe handling (auto-init if needed)
+      return sendEmailWrapper(mailOptions)
         .then(() => console.log(`✓ Email sent to ${subscriber.email}`))
         .catch(err => console.error(`✗ Failed to send to ${subscriber.email}:`, err.message));
     });
@@ -2080,7 +2081,14 @@ app.post('/announcements', upload.single('image'), async (req, res) => {
       registration_deadline !== '' &&
       registration_deadline !== 'null' &&
       registration_deadline !== 'undefined') {
-      regDeadline = registration_deadline;
+      // Parse flexible date string to ISO for Postgres
+      const parsedDate = new Date(registration_deadline);
+      if (!isNaN(parsedDate.getTime())) {
+        regDeadline = parsedDate; // passing Date object to pg is safe
+      } else {
+        console.warn('Invalid deadline format received:', registration_deadline);
+        // Fallback or leave as string (might fail in DB) but preventing crash
+      }
     }
 
     // Parse max registrations
