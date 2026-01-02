@@ -1,7 +1,13 @@
 // backend/db.js
 const { Pool } = require('pg');
+const dns = require('dns');
 
-// Simple configuration - no DNS hacks needed when using Session Mode pooler
+// Force IPv4 globally to avoid Render's IPv6 timeout issues
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
+
+// Connection pool with stability settings
 const pool = new Pool({
   host: process.env.DB_HOST,
   port: process.env.DB_PORT || 5432,
@@ -9,9 +15,9 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME || "postgres",
   ssl: { rejectUnauthorized: false },
-  max: 10, // Reduced from 20 for better stability on free tier
+  max: 5, // Low pool size for stability on free tier
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 20000, // Increased from 10s to 20s
+  connectionTimeoutMillis: 30000, // 30 second timeout
   keepAlive: true,
   keepAliveInitialDelayMillis: 10000,
 });
