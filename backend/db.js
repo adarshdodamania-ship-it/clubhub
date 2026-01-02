@@ -7,7 +7,8 @@ const pool = new Pool({
   user: process.env.DB_USER || "postgres",
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME || "postgres",
-  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false
+  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
+  family: 4 // Force IPv4 to resolve Render ENETUNREACH errors
 });
 
 /* =========================
