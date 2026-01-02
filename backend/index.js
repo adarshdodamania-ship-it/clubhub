@@ -102,7 +102,7 @@ const initializeEmail = async () => {
       tls: {
         rejectUnauthorized: false
       },
-      //servername: process.env.EMAIL_HOST, // verifying certificate might need this
+      servername: process.env.EMAIL_HOST, // verifying certificate needs this when using IP
     });
 
     await transporter.verify();
